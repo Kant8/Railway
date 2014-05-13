@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="2cd191128a9d40d78aa4d32fb6e2c0c2" Name="Diagram1">
+        <EntityTypeShape EntityType="RailwayModel.Passenger" Width="1.5" PointX="5.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="RailwayModel.RoadNet" Width="1.5" PointX="5.25" PointY="7.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="RailwayModel.Route" Width="1.5" PointX="11" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="RailwayModel.Station" Width="1.5" PointX="0.75" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="RailwayModel.Ticket" Width="1.5" PointX="7.5" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="RailwayModel.Train" Width="1.5" PointX="3" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="RailwayModel.Wagon" Width="1.5" PointX="5.25" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="RailwayModel.Waypoint" Width="1.5" PointX="3" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="RailwayModel.Worker" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="RailwayModel.WaypointStation" Width="1.5" PointX="7.75" PointY="8" IsExpanded="true" />
+        <AssociationConnector Association="RailwayModel.FK_Ticket_Passenger" ManuallyRouted="false" />
+        <AssociationConnector Association="RailwayModel.FK_RoadNet_Waypoint" ManuallyRouted="false" />
+        <AssociationConnector Association="RailwayModel.FK_RoadNet_Waypoint_Next" ManuallyRouted="false" />
+        <AssociationConnector Association="RailwayModel.FK_RoadNet_Waypoint_Prev" ManuallyRouted="false" />
+        <AssociationConnector Association="RailwayModel.FK_Ticket_Route" ManuallyRouted="false" />
+        <AssociationConnector Association="RailwayModel.FK_Train_Station" ManuallyRouted="false" />
+        <AssociationConnector Association="RailwayModel.FK_Waypoint_Station" ManuallyRouted="false" />
+        <AssociationConnector Association="RailwayModel.FK_Ticket_Wagon" ManuallyRouted="false" />
+        <AssociationConnector Association="RailwayModel.FK_Train_Worker" ManuallyRouted="false" />
+        <AssociationConnector Association="RailwayModel.FK_Wagon_Train" ManuallyRouted="false" />
+        <AssociationConnector Association="RailwayModel.FK_Wagon_Worker" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

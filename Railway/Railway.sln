@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailwayAdmin", "RailwayAdmin\RailwayAdmin.csproj", "{6E634AEF-17BB-409A-9FD5-DAB8D710CCAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RailwayCore", "RailwayCore\RailwayCore.csproj", "{542D7F7F-FEFE-4818-94E0-0EDA23EC7296}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E634AEF-17BB-409A-9FD5-DAB8D710CCAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E634AEF-17BB-409A-9FD5-DAB8D710CCAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E634AEF-17BB-409A-9FD5-DAB8D710CCAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E634AEF-17BB-409A-9FD5-DAB8D710CCAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{542D7F7F-FEFE-4818-94E0-0EDA23EC7296}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{542D7F7F-FEFE-4818-94E0-0EDA23EC7296}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{542D7F7F-FEFE-4818-94E0-0EDA23EC7296}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{542D7F7F-FEFE-4818-94E0-0EDA23EC7296}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

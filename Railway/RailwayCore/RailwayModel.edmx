@@ -1,0 +1,843 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="RailwayModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Passenger">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="MiddleName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="IdentityNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RoadNet">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="WaypointId" Type="int" Nullable="false" />
+          <Property Name="PrevWaypointId" Type="int" />
+          <Property Name="NextWaypointId" Type="int" />
+        </EntityType>
+        <EntityType Name="Route">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StartStation" Type="int" Nullable="false" />
+          <Property Name="StartTime" Type="datetime" Nullable="false" />
+          <Property Name="EndStation" Type="int" Nullable="false" />
+          <Property Name="EndTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Station">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Ticket">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PassengerId" Type="int" />
+          <Property Name="Price" Type="money" Nullable="false" />
+          <Property Name="WagonId" Type="int" Nullable="false" />
+          <Property Name="RouteId" Type="int" Nullable="false" />
+          <Property Name="BuyDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Train">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="MaxWagonCount" Type="int" Nullable="false" />
+          <Property Name="DriverId" Type="int" />
+          <Property Name="CurrentStationId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Wagon">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MaxPassengerCount" Type="int" Nullable="false" />
+          <Property Name="PassengerCount" Type="int" Nullable="false" />
+          <Property Name="TrainId" Type="int" />
+          <Property Name="ConductorId" Type="int" />
+        </EntityType>
+        <EntityType Name="Waypoint">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StationId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Worker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="MiddleName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="LengthOfService" Type="int" Nullable="false" />
+          <Property Name="Salary" Type="money" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="WaypointStation">
+          <Key>
+            <PropertyRef Name="StationId" />
+            <PropertyRef Name="WaypointId" />
+            <PropertyRef Name="StationName" />
+          </Key>
+          <Property Name="StationId" Type="int" Nullable="false" />
+          <Property Name="WaypointId" Type="int" Nullable="false" />
+          <Property Name="StationName" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_RoadNet_Waypoint">
+          <End Role="Waypoint" Type="Self.Waypoint" Multiplicity="1" />
+          <End Role="RoadNet" Type="Self.RoadNet" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Waypoint">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RoadNet">
+              <PropertyRef Name="WaypointId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoadNet_Waypoint_Next">
+          <End Role="Waypoint" Type="Self.Waypoint" Multiplicity="0..1" />
+          <End Role="RoadNet" Type="Self.RoadNet" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Waypoint">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RoadNet">
+              <PropertyRef Name="NextWaypointId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoadNet_Waypoint_Prev">
+          <End Role="Waypoint" Type="Self.Waypoint" Multiplicity="0..1" />
+          <End Role="RoadNet" Type="Self.RoadNet" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Waypoint">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RoadNet">
+              <PropertyRef Name="PrevWaypointId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ticket_Passenger">
+          <End Role="Passenger" Type="Self.Passenger" Multiplicity="0..1" />
+          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Passenger">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Ticket">
+              <PropertyRef Name="PassengerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ticket_Route">
+          <End Role="Route" Type="Self.Route" Multiplicity="1" />
+          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Route">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Ticket">
+              <PropertyRef Name="RouteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ticket_Wagon">
+          <End Role="Wagon" Type="Self.Wagon" Multiplicity="1" />
+          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Wagon">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Ticket">
+              <PropertyRef Name="WagonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Train_Station">
+          <End Role="Station" Type="Self.Station" Multiplicity="1" />
+          <End Role="Train" Type="Self.Train" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Train">
+              <PropertyRef Name="CurrentStationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Train_Worker">
+          <End Role="Worker" Type="Self.Worker" Multiplicity="0..1" />
+          <End Role="Train" Type="Self.Train" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Worker">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Train">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Wagon_Train">
+          <End Role="Train" Type="Self.Train" Multiplicity="0..1" />
+          <End Role="Wagon" Type="Self.Wagon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Train">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Wagon">
+              <PropertyRef Name="TrainId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Wagon_Worker">
+          <End Role="Worker" Type="Self.Worker" Multiplicity="0..1" />
+          <End Role="Wagon" Type="Self.Wagon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Worker">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Wagon">
+              <PropertyRef Name="ConductorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Waypoint_Station">
+          <End Role="Station" Type="Self.Station" Multiplicity="1" />
+          <End Role="Waypoint" Type="Self.Waypoint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Waypoint">
+              <PropertyRef Name="StationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="ClearRoadNet" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="GetNetSegment" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="StartWaypointId" Type="int" Mode="In" />
+          <Parameter Name="Forward" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="GetNetSegmentsByStationId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="StationId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetStationsOnSegmentsByStationId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="StationId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetStationsOnSegmentsByStationIdFull" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="StationId" Type="int" Mode="In" />
+        </Function>
+        <EntityContainer Name="RailwayModelStoreContainer">
+          <EntitySet Name="Passenger" EntityType="Self.Passenger" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RoadNet" EntityType="Self.RoadNet" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Route" EntityType="Self.Route" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Station" EntityType="Self.Station" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Ticket" EntityType="Self.Ticket" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Train" EntityType="Self.Train" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Wagon" EntityType="Self.Wagon" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Waypoint" EntityType="Self.Waypoint" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Worker" EntityType="Self.Worker" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WaypointStation" EntityType="Self.WaypointStation" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [WaypointStation].[StationId] AS [StationId], 
+    [WaypointStation].[WaypointId] AS [WaypointId], 
+    [WaypointStation].[StationName] AS [StationName]
+    FROM [dbo].[WaypointStation] AS [WaypointStation]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_RoadNet_Waypoint" Association="Self.FK_RoadNet_Waypoint">
+            <End Role="Waypoint" EntitySet="Waypoint" />
+            <End Role="RoadNet" EntitySet="RoadNet" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoadNet_Waypoint_Next" Association="Self.FK_RoadNet_Waypoint_Next">
+            <End Role="Waypoint" EntitySet="Waypoint" />
+            <End Role="RoadNet" EntitySet="RoadNet" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoadNet_Waypoint_Prev" Association="Self.FK_RoadNet_Waypoint_Prev">
+            <End Role="Waypoint" EntitySet="Waypoint" />
+            <End Role="RoadNet" EntitySet="RoadNet" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Passenger" Association="Self.FK_Ticket_Passenger">
+            <End Role="Passenger" EntitySet="Passenger" />
+            <End Role="Ticket" EntitySet="Ticket" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Route" Association="Self.FK_Ticket_Route">
+            <End Role="Route" EntitySet="Route" />
+            <End Role="Ticket" EntitySet="Ticket" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Wagon" Association="Self.FK_Ticket_Wagon">
+            <End Role="Wagon" EntitySet="Wagon" />
+            <End Role="Ticket" EntitySet="Ticket" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Train_Station" Association="Self.FK_Train_Station">
+            <End Role="Station" EntitySet="Station" />
+            <End Role="Train" EntitySet="Train" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Train_Worker" Association="Self.FK_Train_Worker">
+            <End Role="Worker" EntitySet="Worker" />
+            <End Role="Train" EntitySet="Train" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Wagon_Train" Association="Self.FK_Wagon_Train">
+            <End Role="Train" EntitySet="Train" />
+            <End Role="Wagon" EntitySet="Wagon" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Wagon_Worker" Association="Self.FK_Wagon_Worker">
+            <End Role="Worker" EntitySet="Worker" />
+            <End Role="Wagon" EntitySet="Wagon" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Waypoint_Station" Association="Self.FK_Waypoint_Station">
+            <End Role="Station" EntitySet="Station" />
+            <End Role="Waypoint" EntitySet="Waypoint" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="RailwayModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Passenger">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MiddleName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IdentityNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_Passenger" FromRole="Passenger" ToRole="Ticket" />
+        </EntityType>
+        <EntityType Name="RoadNet">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="WaypointId" Type="Int32" Nullable="false" />
+          <Property Name="PrevWaypointId" Type="Int32" />
+          <Property Name="NextWaypointId" Type="Int32" />
+          <NavigationProperty Name="Waypoint" Relationship="Self.FK_RoadNet_Waypoint" FromRole="RoadNet" ToRole="Waypoint" />
+          <NavigationProperty Name="NextWaypoint" Relationship="Self.FK_RoadNet_Waypoint_Next" FromRole="RoadNet" ToRole="Waypoint" />
+          <NavigationProperty Name="PrevWaypoint" Relationship="Self.FK_RoadNet_Waypoint_Prev" FromRole="RoadNet" ToRole="Waypoint" />
+        </EntityType>
+        <EntityType Name="Route">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StartStation" Type="Int32" Nullable="false" />
+          <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndStation" Type="Int32" Nullable="false" />
+          <Property Name="EndTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_Route" FromRole="Route" ToRole="Ticket" />
+        </EntityType>
+        <EntityType Name="Station">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Trains" Relationship="Self.FK_Train_Station" FromRole="Station" ToRole="Train" />
+          <NavigationProperty Name="Waypoints" Relationship="Self.FK_Waypoint_Station" FromRole="Station" ToRole="Waypoint" />
+        </EntityType>
+        <EntityType Name="Ticket">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PassengerId" Type="Int32" />
+          <Property Name="Price" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="WagonId" Type="Int32" Nullable="false" />
+          <Property Name="RouteId" Type="Int32" Nullable="false" />
+          <Property Name="BuyDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Passenger" Relationship="Self.FK_Ticket_Passenger" FromRole="Ticket" ToRole="Passenger" />
+          <NavigationProperty Name="Route" Relationship="Self.FK_Ticket_Route" FromRole="Ticket" ToRole="Route" />
+          <NavigationProperty Name="Wagon" Relationship="Self.FK_Ticket_Wagon" FromRole="Ticket" ToRole="Wagon" />
+        </EntityType>
+        <EntityType Name="Train">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MaxWagonCount" Type="Int32" Nullable="false" />
+          <Property Name="DriverId" Type="Int32" />
+          <Property Name="CurrentStationId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Station" Relationship="Self.FK_Train_Station" FromRole="Train" ToRole="Station" />
+          <NavigationProperty Name="Worker" Relationship="Self.FK_Train_Worker" FromRole="Train" ToRole="Worker" />
+          <NavigationProperty Name="Wagons" Relationship="Self.FK_Wagon_Train" FromRole="Train" ToRole="Wagon" />
+        </EntityType>
+        <EntityType Name="Wagon">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MaxPassengerCount" Type="Int32" Nullable="false" />
+          <Property Name="PassengerCount" Type="Int32" Nullable="false" />
+          <Property Name="TrainId" Type="Int32" />
+          <Property Name="ConductorId" Type="Int32" />
+          <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_Wagon" FromRole="Wagon" ToRole="Ticket" />
+          <NavigationProperty Name="Train" Relationship="Self.FK_Wagon_Train" FromRole="Wagon" ToRole="Train" />
+          <NavigationProperty Name="Worker" Relationship="Self.FK_Wagon_Worker" FromRole="Wagon" ToRole="Worker" />
+        </EntityType>
+        <EntityType Name="Waypoint">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StationId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RoadNets" Relationship="Self.FK_RoadNet_Waypoint" FromRole="Waypoint" ToRole="RoadNet" />
+          <NavigationProperty Name="NextRoadNets" Relationship="Self.FK_RoadNet_Waypoint_Next" FromRole="Waypoint" ToRole="RoadNet" />
+          <NavigationProperty Name="PrevRoadNets" Relationship="Self.FK_RoadNet_Waypoint_Prev" FromRole="Waypoint" ToRole="RoadNet" />
+          <NavigationProperty Name="Station" Relationship="Self.FK_Waypoint_Station" FromRole="Waypoint" ToRole="Station" />
+        </EntityType>
+        <EntityType Name="Worker">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MiddleName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LengthOfService" Type="Int32" Nullable="false" />
+          <Property Name="Salary" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <NavigationProperty Name="Trains" Relationship="Self.FK_Train_Worker" FromRole="Worker" ToRole="Train" />
+          <NavigationProperty Name="Wagons" Relationship="Self.FK_Wagon_Worker" FromRole="Worker" ToRole="Wagon" />
+        </EntityType>
+        <EntityType Name="WaypointStation">
+          <Key>
+            <PropertyRef Name="StationId" />
+            <PropertyRef Name="WaypointId" />
+            <PropertyRef Name="StationName" />
+          </Key>
+          <Property Name="StationId" Type="Int32" Nullable="false" />
+          <Property Name="WaypointId" Type="Int32" Nullable="false" />
+          <Property Name="StationName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Ticket_Passenger">
+          <End Role="Passenger" Type="Self.Passenger" Multiplicity="0..1" />
+          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Passenger">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Ticket">
+              <PropertyRef Name="PassengerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoadNet_Waypoint">
+          <End Role="Waypoint" Type="Self.Waypoint" Multiplicity="1" />
+          <End Role="RoadNet" Type="Self.RoadNet" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Waypoint">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RoadNet">
+              <PropertyRef Name="WaypointId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoadNet_Waypoint_Next">
+          <End Role="Waypoint" Type="Self.Waypoint" Multiplicity="0..1" />
+          <End Role="RoadNet" Type="Self.RoadNet" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Waypoint">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RoadNet">
+              <PropertyRef Name="NextWaypointId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoadNet_Waypoint_Prev">
+          <End Role="Waypoint" Type="Self.Waypoint" Multiplicity="0..1" />
+          <End Role="RoadNet" Type="Self.RoadNet" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Waypoint">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="RoadNet">
+              <PropertyRef Name="PrevWaypointId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ticket_Route">
+          <End Role="Route" Type="Self.Route" Multiplicity="1" />
+          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Route">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Ticket">
+              <PropertyRef Name="RouteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Train_Station">
+          <End Role="Station" Type="Self.Station" Multiplicity="1" />
+          <End Role="Train" Type="Self.Train" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Train">
+              <PropertyRef Name="CurrentStationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Waypoint_Station">
+          <End Role="Station" Type="Self.Station" Multiplicity="1" />
+          <End Role="Waypoint" Type="Self.Waypoint" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Waypoint">
+              <PropertyRef Name="StationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ticket_Wagon">
+          <End Role="Wagon" Type="Self.Wagon" Multiplicity="1" />
+          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Wagon">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Ticket">
+              <PropertyRef Name="WagonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Train_Worker">
+          <End Role="Worker" Type="Self.Worker" Multiplicity="0..1" />
+          <End Role="Train" Type="Self.Train" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Worker">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Train">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Wagon_Train">
+          <End Role="Train" Type="Self.Train" Multiplicity="0..1" />
+          <End Role="Wagon" Type="Self.Wagon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Train">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Wagon">
+              <PropertyRef Name="TrainId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Wagon_Worker">
+          <End Role="Worker" Type="Self.Worker" Multiplicity="0..1" />
+          <End Role="Wagon" Type="Self.Wagon" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Worker">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Wagon">
+              <PropertyRef Name="ConductorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="RailwayContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Passengers" EntityType="Self.Passenger" />
+          <EntitySet Name="RoadNets" EntityType="Self.RoadNet" />
+          <EntitySet Name="Routes" EntityType="Self.Route" />
+          <EntitySet Name="Stations" EntityType="Self.Station" />
+          <EntitySet Name="Tickets" EntityType="Self.Ticket" />
+          <EntitySet Name="Trains" EntityType="Self.Train" />
+          <EntitySet Name="Wagons" EntityType="Self.Wagon" />
+          <EntitySet Name="Waypoints" EntityType="Self.Waypoint" />
+          <EntitySet Name="Workers" EntityType="Self.Worker" />
+          <EntitySet Name="WaypointStations" EntityType="Self.WaypointStation" />
+          <AssociationSet Name="FK_Ticket_Passenger" Association="Self.FK_Ticket_Passenger">
+            <End Role="Passenger" EntitySet="Passengers" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoadNet_Waypoint" Association="Self.FK_RoadNet_Waypoint">
+            <End Role="Waypoint" EntitySet="Waypoints" />
+            <End Role="RoadNet" EntitySet="RoadNets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoadNet_Waypoint_Next" Association="Self.FK_RoadNet_Waypoint_Next">
+            <End Role="Waypoint" EntitySet="Waypoints" />
+            <End Role="RoadNet" EntitySet="RoadNets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoadNet_Waypoint_Prev" Association="Self.FK_RoadNet_Waypoint_Prev">
+            <End Role="Waypoint" EntitySet="Waypoints" />
+            <End Role="RoadNet" EntitySet="RoadNets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Route" Association="Self.FK_Ticket_Route">
+            <End Role="Route" EntitySet="Routes" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Train_Station" Association="Self.FK_Train_Station">
+            <End Role="Station" EntitySet="Stations" />
+            <End Role="Train" EntitySet="Trains" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Waypoint_Station" Association="Self.FK_Waypoint_Station">
+            <End Role="Station" EntitySet="Stations" />
+            <End Role="Waypoint" EntitySet="Waypoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Wagon" Association="Self.FK_Ticket_Wagon">
+            <End Role="Wagon" EntitySet="Wagons" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Train_Worker" Association="Self.FK_Train_Worker">
+            <End Role="Worker" EntitySet="Workers" />
+            <End Role="Train" EntitySet="Trains" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Wagon_Train" Association="Self.FK_Wagon_Train">
+            <End Role="Train" EntitySet="Trains" />
+            <End Role="Wagon" EntitySet="Wagons" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Wagon_Worker" Association="Self.FK_Wagon_Worker">
+            <End Role="Worker" EntitySet="Workers" />
+            <End Role="Wagon" EntitySet="Wagons" />
+          </AssociationSet>
+          <FunctionImport Name="ClearRoadNet" />
+          <FunctionImport Name="GetNetSegment" ReturnType="Collection(RailwayModel.GetNetSegment_Result)">
+            <Parameter Name="StartWaypointId" Mode="In" Type="Int32" />
+            <Parameter Name="Forward" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="GetNetSegmentsByStationId" ReturnType="Collection(RailwayModel.GetNetSegmentsByStationId_Result)">
+          <Parameter Name="StationId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetStationsOnSegmentsByStationId" ReturnType="Collection(RailwayModel.GetStationsOnSegmentsByStationId_Result)">
+            <Parameter Name="StationId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetStationsOnSegmentsByStationIdFull" ReturnType="Collection(RailwayModel.GetStationsOnSegmentsByStationIdFull_Result)">
+            <Parameter Name="StationId" Mode="In" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="GetNetSegment_Result">
+          <Property Type="Int32" Name="Id" Nullable="true" />
+          <Property Type="Int32" Name="PrevWaypointId" Nullable="true" />
+          <Property Type="Int32" Name="WaypointId" Nullable="true" />
+          <Property Type="Int32" Name="NextWaypointId" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetNetSegmentsByStationId_Result">
+          <Property Type="Int32" Name="Id" Nullable="true" />
+          <Property Type="Int32" Name="PrevWaypointId" Nullable="true" />
+          <Property Type="Int32" Name="WaypointId" Nullable="true" />
+          <Property Type="Int32" Name="NextWaypointId" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetStationsOnSegmentsByStationId_Result">
+          <Property Type="Int32" Name="WaypointId" Nullable="true" />
+          <Property Type="Int32" Name="StationId" Nullable="false" />
+          <Property Type="String" Name="StationName" Nullable="false" MaxLength="50" />
+        </ComplexType>
+        <ComplexType Name="GetStationsOnSegmentsByStationIdFull_Result">
+          <Property Type="Int32" Name="Id" Nullable="true" />
+          <Property Type="Int32" Name="PrevWaypointId" Nullable="true" />
+          <Property Type="Int32" Name="WaypointId" Nullable="true" />
+          <Property Type="Int32" Name="NextWaypointId" Nullable="true" />
+          <Property Type="Int32" Name="PrevStationId" Nullable="true" />
+          <Property Type="String" Name="PrevStationName" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="StationId" Nullable="false" />
+          <Property Type="String" Name="StationName" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="NextStationId" Nullable="true" />
+          <Property Type="String" Name="NextStationName" Nullable="true" MaxLength="50" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="RailwayModelStoreContainer" CdmEntityContainer="RailwayContext">
+          <EntitySetMapping Name="Passengers">
+            <EntityTypeMapping TypeName="RailwayModel.Passenger">
+              <MappingFragment StoreEntitySet="Passenger">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="IdentityNumber" ColumnName="IdentityNumber" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RoadNets">
+            <EntityTypeMapping TypeName="RailwayModel.RoadNet">
+              <MappingFragment StoreEntitySet="RoadNet">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="WaypointId" ColumnName="WaypointId" />
+                <ScalarProperty Name="PrevWaypointId" ColumnName="PrevWaypointId" />
+                <ScalarProperty Name="NextWaypointId" ColumnName="NextWaypointId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Routes">
+            <EntityTypeMapping TypeName="RailwayModel.Route">
+              <MappingFragment StoreEntitySet="Route">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="StartStation" ColumnName="StartStation" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="EndStation" ColumnName="EndStation" />
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Stations">
+            <EntityTypeMapping TypeName="RailwayModel.Station">
+              <MappingFragment StoreEntitySet="Station">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tickets">
+            <EntityTypeMapping TypeName="RailwayModel.Ticket">
+              <MappingFragment StoreEntitySet="Ticket">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="PassengerId" ColumnName="PassengerId" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="WagonId" ColumnName="WagonId" />
+                <ScalarProperty Name="RouteId" ColumnName="RouteId" />
+                <ScalarProperty Name="BuyDate" ColumnName="BuyDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Trains">
+            <EntityTypeMapping TypeName="RailwayModel.Train">
+              <MappingFragment StoreEntitySet="Train">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="MaxWagonCount" ColumnName="MaxWagonCount" />
+                <ScalarProperty Name="DriverId" ColumnName="DriverId" />
+                <ScalarProperty Name="CurrentStationId" ColumnName="CurrentStationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Wagons">
+            <EntityTypeMapping TypeName="RailwayModel.Wagon">
+              <MappingFragment StoreEntitySet="Wagon">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="MaxPassengerCount" ColumnName="MaxPassengerCount" />
+                <ScalarProperty Name="PassengerCount" ColumnName="PassengerCount" />
+                <ScalarProperty Name="TrainId" ColumnName="TrainId" />
+                <ScalarProperty Name="ConductorId" ColumnName="ConductorId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Waypoints">
+            <EntityTypeMapping TypeName="RailwayModel.Waypoint">
+              <MappingFragment StoreEntitySet="Waypoint">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="StationId" ColumnName="StationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Workers">
+            <EntityTypeMapping TypeName="RailwayModel.Worker">
+              <MappingFragment StoreEntitySet="Worker">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="MiddleName" ColumnName="MiddleName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="LengthOfService" ColumnName="LengthOfService" />
+                <ScalarProperty Name="Salary" ColumnName="Salary" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WaypointStations">
+            <EntityTypeMapping TypeName="RailwayModel.WaypointStation">
+              <MappingFragment StoreEntitySet="WaypointStation">
+                <ScalarProperty Name="StationId" ColumnName="StationId" />
+                <ScalarProperty Name="WaypointId" ColumnName="WaypointId" />
+                <ScalarProperty Name="StationName" ColumnName="StationName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="ClearRoadNet" FunctionName="RailwayModel.Store.ClearRoadNet" />
+          <FunctionImportMapping FunctionImportName="GetNetSegment" FunctionName="RailwayModel.Store.GetNetSegment">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="RailwayModel.GetNetSegment_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="PrevWaypointId" ColumnName="PrevWaypointId" />
+                <ScalarProperty Name="WaypointId" ColumnName="WaypointId" />
+                <ScalarProperty Name="NextWaypointId" ColumnName="NextWaypointId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetNetSegmentsByStationId" FunctionName="RailwayModel.Store.GetNetSegmentsByStationId">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="RailwayModel.GetNetSegmentsByStationId_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="PrevWaypointId" ColumnName="PrevWaypointId" />
+                <ScalarProperty Name="WaypointId" ColumnName="WaypointId" />
+                <ScalarProperty Name="NextWaypointId" ColumnName="NextWaypointId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetStationsOnSegmentsByStationId" FunctionName="RailwayModel.Store.GetStationsOnSegmentsByStationId">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="RailwayModel.GetStationsOnSegmentsByStationId_Result">
+                <ScalarProperty Name="WaypointId" ColumnName="WaypointId" />
+                <ScalarProperty Name="StationId" ColumnName="StationId" />
+                <ScalarProperty Name="StationName" ColumnName="StationName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetStationsOnSegmentsByStationIdFull" FunctionName="RailwayModel.Store.GetStationsOnSegmentsByStationIdFull">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="RailwayModel.GetStationsOnSegmentsByStationIdFull_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="PrevWaypointId" ColumnName="PrevWaypointId" />
+                <ScalarProperty Name="WaypointId" ColumnName="WaypointId" />
+                <ScalarProperty Name="NextWaypointId" ColumnName="NextWaypointId" />
+                <ScalarProperty Name="PrevStationId" ColumnName="PrevStationId" />
+                <ScalarProperty Name="PrevStationName" ColumnName="PrevStationName" />
+                <ScalarProperty Name="StationId" ColumnName="StationId" />
+                <ScalarProperty Name="StationName" ColumnName="StationName" />
+                <ScalarProperty Name="NextStationId" ColumnName="NextStationId" />
+                <ScalarProperty Name="NextStationName" ColumnName="NextStationName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
