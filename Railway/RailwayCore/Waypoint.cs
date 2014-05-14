@@ -19,6 +19,8 @@ namespace RailwayCore
             this.RoadNets = new HashSet<RoadNet>();
             this.NextRoadNets = new HashSet<RoadNet>();
             this.PrevRoadNets = new HashSet<RoadNet>();
+            this.SegmentLengths = new HashSet<SegmentLength>();
+            this.SegmentLengths1 = new HashSet<SegmentLength>();
         }
     
         public int Id { get; set; }
@@ -28,5 +30,7 @@ namespace RailwayCore
         public virtual ICollection<RoadNet> NextRoadNets { get; set; }
         public virtual ICollection<RoadNet> PrevRoadNets { get; set; }
         public virtual Station Station { get; set; }
+        public virtual ICollection<SegmentLength> SegmentLengths { get; set; }
+        public virtual ICollection<SegmentLength> SegmentLengths1 { get; set; }
     }
 }

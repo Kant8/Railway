@@ -26,6 +26,9 @@
         <AssociationConnector Association="RailwayModel.FK_Train_Worker" ManuallyRouted="false" />
         <AssociationConnector Association="RailwayModel.FK_Wagon_Train" ManuallyRouted="false" />
         <AssociationConnector Association="RailwayModel.FK_Wagon_Worker" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="RailwayModel.SegmentLength" Width="1.5" PointX="5.25" PointY="10.75" />
+        <AssociationConnector Association="RailwayModel.FK_SegmentLength_Waypoint_End" />
+        <AssociationConnector Association="RailwayModel.FK_SegmentLength_Waypoint_Start" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

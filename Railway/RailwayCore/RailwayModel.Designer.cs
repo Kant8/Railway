@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'F:\052003\Курсовые\6. Railway\Railway\RailwayCore\RailwayModel.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\Work\Temp\Course\Railway\Railway\RailwayCore\RailwayModel.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

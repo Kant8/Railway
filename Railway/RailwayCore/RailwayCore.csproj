@@ -55,6 +55,7 @@
     <Compile Include="GetNetSegment_Result.cs">
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="GetSegmentLengths_Result.cs" />
     <Compile Include="GetStationsOnSegmentsByStationIdFull_Result.cs">
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>
@@ -83,6 +84,9 @@
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Route.cs">
+      <DependentUpon>RailwayModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SegmentLength.cs">
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Server.cs" />

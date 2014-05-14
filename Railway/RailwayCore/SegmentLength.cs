@@ -12,22 +12,14 @@ namespace RailwayCore
     using System;
     using System.Collections.Generic;
     
-    public partial class Train
+    public partial class SegmentLength
     {
-        public Train()
-        {
-            this.Wagons = new HashSet<Wagon>();
-        }
-    
         public int Id { get; set; }
-        public string Name { get; set; }
-        public int MaxWagonCount { get; set; }
-        public Nullable<int> DriverId { get; set; }
-        public int CurrentStationId { get; set; }
-        public double Velocity { get; set; }
+        public int StartWaypointId { get; set; }
+        public int EndWaypointId { get; set; }
+        public int Length { get; set; }
     
-        public virtual Station Station { get; set; }
-        public virtual Worker Worker { get; set; }
-        public virtual ICollection<Wagon> Wagons { get; set; }
+        public virtual Waypoint Waypoint { get; set; }
+        public virtual Waypoint Waypoint1 { get; set; }
     }
 }

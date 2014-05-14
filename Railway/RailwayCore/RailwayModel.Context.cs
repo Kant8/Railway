@@ -37,6 +37,7 @@ namespace RailwayCore
         public virtual DbSet<Waypoint> Waypoints { get; set; }
         public virtual DbSet<Worker> Workers { get; set; }
         public virtual DbSet<WaypointStation> WaypointStations { get; set; }
+        public virtual DbSet<SegmentLength> SegmentLengths { get; set; }
     
         public virtual int ClearRoadNet()
         {
@@ -81,6 +82,11 @@ namespace RailwayCore
                 new ObjectParameter("StationId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetStationsOnSegmentsByStationIdFull_Result>("GetStationsOnSegmentsByStationIdFull", stationIdParameter);
+        }
+    
+        public virtual int GetSegmentLengths()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetSegmentLengths");
         }
     }
 }
