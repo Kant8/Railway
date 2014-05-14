@@ -32,7 +32,7 @@
           <Property Name="StartStationId" Type="int" Nullable="false" />
           <Property Name="StartTime" Type="datetime" Nullable="false" />
           <Property Name="EndStationId" Type="int" Nullable="false" />
-          <Property Name="EndTime" Type="datetime" Nullable="false" />
+          <Property Name="EndTime" Type="datetime" />
           <Property Name="TrainId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="SegmentLength">
@@ -335,6 +335,7 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           </ReferentialConstraint>
         </Association>
         <Function Name="ClearRoadNet" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="GetJunktionStations" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="GetNetSegment" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StartWaypointId" Type="int" Mode="In" />
           <Parameter Name="Forward" Type="bit" Mode="In" />
@@ -473,7 +474,7 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndTime" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_Route" FromRole="Route" ToRole="Ticket" />
           <Property Name="TrainId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Train" Relationship="RailwayModel.FK_Route_Train" FromRole="Route" ToRole="Train" />
@@ -811,6 +812,7 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
             <End Role="Station" EntitySet="Stations" />
             <End Role="Route" EntitySet="Routes" />
           </AssociationSet>
+          <FunctionImport Name="GetJunktionStations" ReturnType="Collection(RailwayModel.GetJunktionStations_Result)" />
         </EntityContainer>
         <ComplexType Name="GetNetSegment_Result">
           <Property Type="Int32" Name="Id" Nullable="true" />
@@ -849,8 +851,8 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           <Property Name="StartWaypointId" Type="Int32" Nullable="false" />
           <Property Name="EndWaypointId" Type="Int32" Nullable="false" />
           <Property Name="Length" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Waypoint" Relationship="RailwayModel.FK_SegmentLength_Waypoint_End" FromRole="SegmentLength" ToRole="Waypoint" />
-          <NavigationProperty Name="Waypoint1" Relationship="RailwayModel.FK_SegmentLength_Waypoint_Start" FromRole="SegmentLength" ToRole="Waypoint" />
+          <NavigationProperty Name="EndWaypoint" Relationship="RailwayModel.FK_SegmentLength_Waypoint_End" FromRole="SegmentLength" ToRole="Waypoint" />
+          <NavigationProperty Name="StartWaypoint" Relationship="RailwayModel.FK_SegmentLength_Waypoint_Start" FromRole="SegmentLength" ToRole="Waypoint" />
         </EntityType>
         <Association Name="FK_SegmentLength_Waypoint_End">
           <End Type="RailwayModel.Waypoint" Role="Waypoint" Multiplicity="1" />
@@ -936,6 +938,10 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <ComplexType Name="GetJunktionStations_Result">
+          <Property Type="Int32" Name="StationId" Nullable="false" />
+          <Property Type="String" Name="StationName" Nullable="false" MaxLength="50" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1109,6 +1115,14 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="GetSegmentLengths" FunctionName="RailwayModel.Store.GetSegmentLengths" />
+          <FunctionImportMapping FunctionImportName="GetJunktionStations" FunctionName="RailwayModel.Store.GetJunktionStations">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="RailwayModel.GetJunktionStations_Result">
+                <ScalarProperty Name="StationId" ColumnName="StationId" />
+                <ScalarProperty Name="StationName" ColumnName="StationName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

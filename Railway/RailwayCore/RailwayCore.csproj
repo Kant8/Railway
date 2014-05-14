@@ -49,6 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GetJunktionStations_Result.cs">
+      <DependentUpon>RailwayModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="GetNetSegmentsByStationId_Result.cs">
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>

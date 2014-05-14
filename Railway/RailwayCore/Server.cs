@@ -48,16 +48,18 @@ namespace RailwayCore
 
             //Context.Routes.Add(route);
             //Context.SaveChanges();
+            //FillRoute(route);
+            //Context.SaveChanges();
 
             var route = Context.Routes.First();
 
             var passenger = new Passenger
-                                {
-                                    FirstName = "Pass1",
-                                    MiddleName = "Pass1",
-                                    LastName = "Pass1",
-                                    IdentityNumber = "12345"
-                                };
+            {
+                FirstName = "Pass1",
+                MiddleName = "Pass1",
+                LastName = "Pass1",
+                IdentityNumber = "12345"
+            };
 
             var ticket = new Ticket();
             ticket.Route = route;
@@ -315,5 +317,107 @@ namespace RailwayCore
             ticket.InTime = inTime;
             ticket.OutTime = outTime;
         }
+
+        public static void FillRoute(Route route)
+        {
+            var endTime = GetTimeTillStationOnRoute(route.Id, route.EndStationId);
+            route.EndTime = endTime;
+        }
+
+        public static List<Waypoint> CreateNetSegment(List<Station> stations)
+        {
+            var waypoints = stations.Select(station => new Waypoint {StationId = station.Id}).ToList();
+
+            var segments = new List<RoadNet>();
+            segments.Add(new RoadNet
+            {
+                PrevWaypoint = null,
+                Waypoint = waypoints[0],
+                NextWaypoint = waypoints[1]
+            });
+            for (int i = 1; i < waypoints.Count - 1; i++)
+            {
+                var netSeg = new RoadNet();
+                netSeg.PrevWaypoint = waypoints[i - 1];
+                netSeg.Waypoint = waypoints[i];
+                netSeg.NextWaypoint = waypoints[i + 1];
+            }
+            segments.Add(new RoadNet
+            {
+                PrevWaypoint = waypoints[waypoints.Count - 2],
+                Waypoint = waypoints[waypoints.Count - 1],
+                NextWaypoint = null
+            });
+
+            Context.RoadNets.AddRange(segments);
+            Context.SaveChanges();
+
+            return waypoints;
+        }
+
+        public static List<Station> GetStationsFromSegments(List<List<GetStationsOnSegmentsByStationId_Result>> segments)
+        {
+            var res = new List<Station>();
+            foreach (var segment in segments)
+            {
+                res.AddRange(segment.Select(part => Context.Stations.Find(part.StationId)));
+            }
+            return res.Distinct().ToList();
+        }
+
+        public static void CreateSegmentLengths(List<Waypoint> waypoints, List<int> lengths)
+        {
+            for (int i = 0; i < waypoints.Count - 1; i++)
+            {
+                var segLength = new SegmentLength
+                {
+                    StartWaypoint = waypoints[i],
+                    EndWaypoint = waypoints[i + 1],
+                    Length = lengths[i]
+                };
+                Context.SegmentLengths.Add(segLength);
+            }
+            Context.SaveChanges();
+        }
+
+        public static List<Station> GetJunktionStations()
+        {
+            var connection = Context.Database.Connection;
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = "dbo.GetJunktionStations";
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            var reader = cmd.ExecuteReader();
+            var junkStations = ((IObjectContextAdapter)Context).ObjectContext
+                .Translate<GetJunktionStations_Result>(reader);
+
+            var result = new List<Station>();
+            foreach (var js in junkStations)
+            {
+                result.Add(Context.Stations.Find(js.StationId));
+            }
+            return result;
+        }
+
+        public static List<Station> GetJunktionStationPairs(Station station)
+        {
+            var junkStations = GetJunktionStations().Except(new[] {station});
+
+            var segments = GetStationsOnSegmentsByStationId(station.Id);
+
+            var res = new List<Station>();
+            foreach (var segment in segments)
+            {
+                var ws = segment.Where(seg =>
+                {
+                    var js = junkStations.FirstOrDefault(st => st.Id == seg.StationId);
+                    return js != null;
+                });
+                res.AddRange(ws.Select(w => junkStations.First(js => js.Id == w.StationId)));
+            }
+            return res;
+        }
+
+
     }
 }
