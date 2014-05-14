@@ -29,6 +29,11 @@
         <EntityTypeShape EntityType="RailwayModel.SegmentLength" Width="1.5" PointX="5.25" PointY="10.75" />
         <AssociationConnector Association="RailwayModel.FK_SegmentLength_Waypoint_End" />
         <AssociationConnector Association="RailwayModel.FK_SegmentLength_Waypoint_Start" />
+        <AssociationConnector Association="RailwayModel.FK_Route_Train" />
+        <AssociationConnector Association="RailwayModel.FK_Ticket_Station_In" />
+        <AssociationConnector Association="RailwayModel.FK_Ticket_Station_Out" />
+        <AssociationConnector Association="RailwayModel.FK_Route_Station_End" />
+        <AssociationConnector Association="RailwayModel.FK_Route_Station_Start" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

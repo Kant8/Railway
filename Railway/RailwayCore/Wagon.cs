@@ -21,12 +21,12 @@ namespace RailwayCore
     
         public int Id { get; set; }
         public int MaxPassengerCount { get; set; }
-        public int PassengerCount { get; set; }
+        public int PassengerCount { get; private set; }
         public Nullable<int> TrainId { get; set; }
         public Nullable<int> ConductorId { get; set; }
     
         public virtual ICollection<Ticket> Tickets { get; set; }
         public virtual Train Train { get; set; }
-        public virtual Worker Worker { get; set; }
+        public virtual Worker Conductor { get; set; }
     }
 }

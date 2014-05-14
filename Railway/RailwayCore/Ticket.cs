@@ -15,14 +15,21 @@ namespace RailwayCore
     public partial class Ticket
     {
         public int Id { get; set; }
-        public Nullable<int> PassengerId { get; set; }
+        public int PassengerId { get; set; }
         public decimal Price { get; set; }
         public int WagonId { get; set; }
         public int RouteId { get; set; }
-        public Nullable<System.DateTime> BuyDate { get; set; }
+        public System.DateTime BuyDate { get; set; }
+        public int InStationId { get; set; }
+        public int OutStationId { get; set; }
+        public int Length { get; set; }
+        public System.DateTime InTime { get; set; }
+        public System.DateTime OutTime { get; set; }
     
         public virtual Passenger Passenger { get; set; }
         public virtual Route Route { get; set; }
         public virtual Wagon Wagon { get; set; }
+        public virtual Station InStation { get; set; }
+        public virtual Station OutStation { get; set; }
     }
 }

@@ -28,9 +28,89 @@ namespace RailwayCore
                 temp += station.Name + Environment.NewLine;
             }
 
+
+            var minskP = stations.First(s => s.Name == "Минск-Пассажирский");
+            var orshaZ = stations.First(s => s.Name == "Орша-Западная");
+
+
+
+           
+
+            //var route = new Route();
+            //route.StartStation = minskP;
+            //route.EndStation = orshaZ;
+            //route.StartTime = CreateTrainTime(12, 00);
+            //route.EndTime = route.StartTime;
+            //route.Train = CreateTrain(minskP);
+
+            //Context.Routes.Add(route);
+            //Context.SaveChanges();
+
+            var route = Context.Routes.First();
+
             GetNetSegmentsByStationId(1);
             GetStationsOnSegmentsByStationId(1);
             GetLengthsBetweenStations(3, 3);
+        }
+
+        private Train CreateTrain(Station startStation)
+        {
+            var driver = new Worker
+            {
+                FirstName = "Андрей",
+                MiddleName = "Андрей",
+                LastName = "Андрей",
+                Salary = 400m,
+                LengthOfService = 1
+            };
+
+            var cond1 = new Worker
+            {
+                FirstName = "cond1",
+                MiddleName = "cond1",
+                LastName = "cond1",
+                Salary = 200,
+                LengthOfService = 1
+            };
+            var cond2 = new Worker
+            {
+                FirstName = "cond2",
+                MiddleName = "cond2",
+                LastName = "cond2",
+                Salary = 200,
+                LengthOfService = 1
+            };
+            var cond3 = new Worker
+            {
+                FirstName = "cond3",
+                MiddleName = "cond3",
+                LastName = "cond3",
+                Salary = 200,
+                LengthOfService = 1
+            };
+
+
+            var train = new Train
+            {
+                Name = "First Train",
+                CurrentStation = startStation,
+                Driver = driver,
+                Velocity = 60
+            };
+
+            var wagon1 = new Wagon {MaxPassengerCount = 3, Conductor = cond1};
+            var wagon2 = new Wagon { MaxPassengerCount = 3, Conductor = cond2 };
+            var wagon3 = new Wagon { MaxPassengerCount = 3, Conductor = cond3 };
+
+            train.Wagons.Add(wagon1); train.Wagons.Add(wagon2); train.Wagons.Add(wagon3);
+
+            return train;
+        }
+
+        public DateTime CreateTrainTime(int hours, int minutes)
+        {
+            var today = DateTime.Today;
+            return new DateTime(today.Year, today.Month, today.Day, hours, minutes, 0);
         }
 
         public static List<List<GetNetSegmentsByStationId_Result>> GetNetSegmentsByStationId(int stationId)
@@ -156,6 +236,59 @@ namespace RailwayCore
             }
 
             return result.Distinct().ToList();
+        }
+
+        public static void GetStartEndWaypointsForRoute(int routeId, out int startWaypointId, out int endWaypointId)
+        {
+            startWaypointId = 0;
+            endWaypointId = 0;
+            var route = Context.Routes.FirstOrDefault(r => r.Id == routeId);
+            if (route == null) return;
+
+            var startSegments = GetNetSegmentsByStationId(route.StartStationId);
+            var endWaypoints = GetWaypointsForStation(route.EndStationId);
+
+            GetNetSegmentsByStationId_Result end = null;
+            List<GetNetSegmentsByStationId_Result> resSegment = null;
+            foreach (var segment in startSegments)
+            {
+                end = segment.FirstOrDefault(s => s.WaypointId != null && endWaypoints.Contains(s.WaypointId.Value));
+                if (end != null)
+                {
+                    resSegment = segment;
+                    break;
+                }
+            }
+            if (resSegment == null) return;
+
+            var startId = resSegment.First().WaypointId;
+            if (startId != null) startWaypointId = startId.Value;
+            var endId = resSegment.Last().WaypointId;
+            if (endId != null) endWaypointId = endId.Value;
+        }
+
+        public static DateTime GetTimeTillStationOnRoute(int routeId, int stationId)
+        {
+            var route = Context.Routes.FirstOrDefault(r => r.Id == routeId);
+            if (route == null) throw new ArgumentException("No such route");
+
+            var length = GetLengthsBetweenStations(route.StartStationId, stationId);
+            if (length == 0) return route.StartTime;
+
+            double travelHours = (double) length/route.Train.Velocity;
+
+            return route.StartTime.AddHours(travelHours);
+        }
+
+        public static void FillTicket(Ticket ticket)
+        {
+            var route = ticket.Route;
+            var inTime = GetTimeTillStationOnRoute(route.Id, ticket.InStationId);
+            var outTime = GetTimeTillStationOnRoute(route.Id, ticket.OutStationId);
+
+            ticket.Length = GetLengthsBetweenStations(ticket.InStationId, ticket.OutStationId);
+            ticket.InTime = inTime;
+            ticket.OutTime = outTime;
         }
     }
 }

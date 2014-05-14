@@ -29,10 +29,11 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="StartStation" Type="int" Nullable="false" />
+          <Property Name="StartStationId" Type="int" Nullable="false" />
           <Property Name="StartTime" Type="datetime" Nullable="false" />
-          <Property Name="EndStation" Type="int" Nullable="false" />
+          <Property Name="EndStationId" Type="int" Nullable="false" />
           <Property Name="EndTime" Type="datetime" Nullable="false" />
+          <Property Name="TrainId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="SegmentLength">
           <Key>
@@ -55,11 +56,16 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="PassengerId" Type="int" />
+          <Property Name="PassengerId" Type="int" Nullable="false" />
           <Property Name="Price" Type="money" Nullable="false" />
           <Property Name="WagonId" Type="int" Nullable="false" />
           <Property Name="RouteId" Type="int" Nullable="false" />
-          <Property Name="BuyDate" Type="datetime" />
+          <Property Name="BuyDate" Type="datetime" Nullable="false" />
+          <Property Name="InStationId" Type="int" Nullable="false" />
+          <Property Name="OutStationId" Type="int" Nullable="false" />
+          <Property Name="Length" Type="int" Nullable="false" />
+          <Property Name="InTime" Type="datetime" Nullable="false" />
+          <Property Name="OutTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Train">
           <Key>
@@ -148,6 +154,42 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Route_Station_End">
+          <End Role="Station" Type="Self.Station" Multiplicity="1" />
+          <End Role="Route" Type="Self.Route" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Route">
+              <PropertyRef Name="EndStationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Route_Station_Start">
+          <End Role="Station" Type="Self.Station" Multiplicity="1" />
+          <End Role="Route" Type="Self.Route" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Route">
+              <PropertyRef Name="StartStationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Route_Train">
+          <End Role="Train" Type="Self.Train" Multiplicity="1" />
+          <End Role="Route" Type="Self.Route" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Train">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Route">
+              <PropertyRef Name="TrainId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SegmentLength_Waypoint_End">
           <End Role="Waypoint" Type="Self.Waypoint" Multiplicity="1" />
           <End Role="SegmentLength" Type="Self.SegmentLength" Multiplicity="*" />
@@ -173,7 +215,7 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_Passenger">
-          <End Role="Passenger" Type="Self.Passenger" Multiplicity="0..1" />
+          <End Role="Passenger" Type="Self.Passenger" Multiplicity="1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Passenger">
@@ -193,6 +235,30 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
             </Principal>
             <Dependent Role="Ticket">
               <PropertyRef Name="RouteId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ticket_Station_In">
+          <End Role="Station" Type="Self.Station" Multiplicity="1" />
+          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Ticket">
+              <PropertyRef Name="InStationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ticket_Station_Out">
+          <End Role="Station" Type="Self.Station" Multiplicity="1" />
+          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Ticket">
+              <PropertyRef Name="OutStationId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -313,6 +379,18 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
             <End Role="Waypoint" EntitySet="Waypoint" />
             <End Role="RoadNet" EntitySet="RoadNet" />
           </AssociationSet>
+          <AssociationSet Name="FK_Route_Station_End" Association="Self.FK_Route_Station_End">
+            <End Role="Station" EntitySet="Station" />
+            <End Role="Route" EntitySet="Route" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Route_Station_Start" Association="Self.FK_Route_Station_Start">
+            <End Role="Station" EntitySet="Station" />
+            <End Role="Route" EntitySet="Route" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Route_Train" Association="Self.FK_Route_Train">
+            <End Role="Train" EntitySet="Train" />
+            <End Role="Route" EntitySet="Route" />
+          </AssociationSet>
           <AssociationSet Name="FK_SegmentLength_Waypoint_End" Association="Self.FK_SegmentLength_Waypoint_End">
             <End Role="Waypoint" EntitySet="Waypoint" />
             <End Role="SegmentLength" EntitySet="SegmentLength" />
@@ -327,6 +405,14 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           </AssociationSet>
           <AssociationSet Name="FK_Ticket_Route" Association="Self.FK_Ticket_Route">
             <End Role="Route" EntitySet="Route" />
+            <End Role="Ticket" EntitySet="Ticket" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Station_In" Association="Self.FK_Ticket_Station_In">
+            <End Role="Station" EntitySet="Station" />
+            <End Role="Ticket" EntitySet="Ticket" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Station_Out" Association="Self.FK_Ticket_Station_Out">
+            <End Role="Station" EntitySet="Station" />
             <End Role="Ticket" EntitySet="Ticket" />
           </AssociationSet>
           <AssociationSet Name="FK_Ticket_Wagon" Association="Self.FK_Ticket_Wagon">
@@ -386,11 +472,15 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="StartStation" Type="Int32" Nullable="false" />
           <Property Name="StartTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndStation" Type="Int32" Nullable="false" />
           <Property Name="EndTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_Route" FromRole="Route" ToRole="Ticket" />
+          <Property Name="TrainId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Train" Relationship="RailwayModel.FK_Route_Train" FromRole="Route" ToRole="Train" />
+          <Property Name="StartStationId" Type="Int32" Nullable="false" />
+          <Property Name="EndStationId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="EndStation" Relationship="RailwayModel.FK_Route_Station_End" FromRole="Route" ToRole="Station" />
+          <NavigationProperty Name="StartStation" Relationship="RailwayModel.FK_Route_Station_Start" FromRole="Route" ToRole="Station" />
         </EntityType>
         <EntityType Name="Station">
           <Key>
@@ -400,20 +490,31 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Trains" Relationship="Self.FK_Train_Station" FromRole="Station" ToRole="Train" />
           <NavigationProperty Name="Waypoints" Relationship="Self.FK_Waypoint_Station" FromRole="Station" ToRole="Waypoint" />
+          <NavigationProperty Name="InTickets" Relationship="RailwayModel.FK_Ticket_Station_In" FromRole="Station" ToRole="Ticket" />
+          <NavigationProperty Name="OutTickets" Relationship="RailwayModel.FK_Ticket_Station_Out" FromRole="Station" ToRole="Ticket" />
+          <NavigationProperty Name="EndRoutes" Relationship="RailwayModel.FK_Route_Station_End" FromRole="Station" ToRole="Route" />
+          <NavigationProperty Name="StartRoutes" Relationship="RailwayModel.FK_Route_Station_Start" FromRole="Station" ToRole="Route" />
         </EntityType>
         <EntityType Name="Ticket">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PassengerId" Type="Int32" />
+          <Property Name="PassengerId" Type="Int32" Nullable="false" />
           <Property Name="Price" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
           <Property Name="WagonId" Type="Int32" Nullable="false" />
           <Property Name="RouteId" Type="Int32" Nullable="false" />
-          <Property Name="BuyDate" Type="DateTime" Precision="3" />
+          <Property Name="BuyDate" Type="DateTime" Precision="3" Nullable="false" />
           <NavigationProperty Name="Passenger" Relationship="Self.FK_Ticket_Passenger" FromRole="Ticket" ToRole="Passenger" />
           <NavigationProperty Name="Route" Relationship="Self.FK_Ticket_Route" FromRole="Ticket" ToRole="Route" />
           <NavigationProperty Name="Wagon" Relationship="Self.FK_Ticket_Wagon" FromRole="Ticket" ToRole="Wagon" />
+          <Property Name="InStationId" Type="Int32" Nullable="false" />
+          <Property Name="OutStationId" Type="Int32" Nullable="false" />
+          <Property Name="Length" Type="Int32" Nullable="false" />
+          <Property Name="InTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="OutTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="InStation" Relationship="RailwayModel.FK_Ticket_Station_In" FromRole="Ticket" ToRole="Station" />
+          <NavigationProperty Name="OutStation" Relationship="RailwayModel.FK_Ticket_Station_Out" FromRole="Ticket" ToRole="Station" />
         </EntityType>
         <EntityType Name="Train">
           <Key>
@@ -424,10 +525,11 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           <Property Name="MaxWagonCount" Type="Int32" Nullable="false" />
           <Property Name="DriverId" Type="Int32" />
           <Property Name="CurrentStationId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Station" Relationship="Self.FK_Train_Station" FromRole="Train" ToRole="Station" />
-          <NavigationProperty Name="Worker" Relationship="Self.FK_Train_Worker" FromRole="Train" ToRole="Worker" />
+          <NavigationProperty Name="CurrentStation" Relationship="Self.FK_Train_Station" FromRole="Train" ToRole="Station" />
+          <NavigationProperty Name="Driver" Relationship="Self.FK_Train_Worker" FromRole="Train" ToRole="Worker" />
           <NavigationProperty Name="Wagons" Relationship="Self.FK_Wagon_Train" FromRole="Train" ToRole="Wagon" />
           <Property Name="Velocity" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Routes" Relationship="RailwayModel.FK_Route_Train" FromRole="Train" ToRole="Route" />
         </EntityType>
         <EntityType Name="Wagon">
           <Key>
@@ -435,12 +537,12 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaxPassengerCount" Type="Int32" Nullable="false" />
-          <Property Name="PassengerCount" Type="Int32" Nullable="false" />
+          <Property Name="PassengerCount" Type="Int32" Nullable="false" a:SetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
           <Property Name="TrainId" Type="Int32" />
           <Property Name="ConductorId" Type="Int32" />
           <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_Wagon" FromRole="Wagon" ToRole="Ticket" />
           <NavigationProperty Name="Train" Relationship="Self.FK_Wagon_Train" FromRole="Wagon" ToRole="Train" />
-          <NavigationProperty Name="Worker" Relationship="Self.FK_Wagon_Worker" FromRole="Wagon" ToRole="Worker" />
+          <NavigationProperty Name="Conductor" Relationship="Self.FK_Wagon_Worker" FromRole="Wagon" ToRole="Worker" />
         </EntityType>
         <EntityType Name="Waypoint">
           <Key>
@@ -479,7 +581,7 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           <Property Name="StationName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
         </EntityType>
         <Association Name="FK_Ticket_Passenger">
-          <End Role="Passenger" Type="Self.Passenger" Multiplicity="0..1" />
+          <End Role="Passenger" Type="Self.Passenger" Multiplicity="1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Passenger">
@@ -689,6 +791,26 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
             <End Role="SegmentLength" EntitySet="SegmentLengths" />
           </AssociationSet>
           <FunctionImport Name="GetSegmentLengths" />
+          <AssociationSet Name="FK_Route_Train" Association="RailwayModel.FK_Route_Train">
+            <End Role="Train" EntitySet="Trains" />
+            <End Role="Route" EntitySet="Routes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Station_In" Association="RailwayModel.FK_Ticket_Station_In">
+            <End Role="Station" EntitySet="Stations" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Station_Out" Association="RailwayModel.FK_Ticket_Station_Out">
+            <End Role="Station" EntitySet="Stations" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Route_Station_End" Association="RailwayModel.FK_Route_Station_End">
+            <End Role="Station" EntitySet="Stations" />
+            <End Role="Route" EntitySet="Routes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Route_Station_Start" Association="RailwayModel.FK_Route_Station_Start">
+            <End Role="Station" EntitySet="Stations" />
+            <End Role="Route" EntitySet="Routes" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="GetNetSegment_Result">
           <Property Type="Int32" Name="Id" Nullable="true" />
@@ -754,6 +876,66 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Route_Train">
+          <End Type="RailwayModel.Train" Role="Train" Multiplicity="1" />
+          <End Type="RailwayModel.Route" Role="Route" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Train">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Route">
+              <PropertyRef Name="TrainId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ticket_Station_In">
+          <End Type="RailwayModel.Station" Role="Station" Multiplicity="1" />
+          <End Type="RailwayModel.Ticket" Role="Ticket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Ticket">
+              <PropertyRef Name="InStationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ticket_Station_Out">
+          <End Type="RailwayModel.Station" Role="Station" Multiplicity="1" />
+          <End Type="RailwayModel.Ticket" Role="Ticket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Ticket">
+              <PropertyRef Name="OutStationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Route_Station_End">
+          <End Type="RailwayModel.Station" Role="Station" Multiplicity="1" />
+          <End Type="RailwayModel.Route" Role="Route" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Route">
+              <PropertyRef Name="EndStationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Route_Station_Start">
+          <End Type="RailwayModel.Station" Role="Station" Multiplicity="1" />
+          <End Type="RailwayModel.Route" Role="Route" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Route">
+              <PropertyRef Name="StartStationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -784,10 +966,11 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           <EntitySetMapping Name="Routes">
             <EntityTypeMapping TypeName="RailwayModel.Route">
               <MappingFragment StoreEntitySet="Route">
+                <ScalarProperty Name="EndStationId" ColumnName="EndStationId" />
+                <ScalarProperty Name="StartStationId" ColumnName="StartStationId" />
+                <ScalarProperty Name="TrainId" ColumnName="TrainId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="StartStation" ColumnName="StartStation" />
                 <ScalarProperty Name="StartTime" ColumnName="StartTime" />
-                <ScalarProperty Name="EndStation" ColumnName="EndStation" />
                 <ScalarProperty Name="EndTime" ColumnName="EndTime" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -803,6 +986,11 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           <EntitySetMapping Name="Tickets">
             <EntityTypeMapping TypeName="RailwayModel.Ticket">
               <MappingFragment StoreEntitySet="Ticket">
+                <ScalarProperty Name="OutTime" ColumnName="OutTime" />
+                <ScalarProperty Name="InTime" ColumnName="InTime" />
+                <ScalarProperty Name="Length" ColumnName="Length" />
+                <ScalarProperty Name="OutStationId" ColumnName="OutStationId" />
+                <ScalarProperty Name="InStationId" ColumnName="InStationId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="PassengerId" ColumnName="PassengerId" />
                 <ScalarProperty Name="Price" ColumnName="Price" />

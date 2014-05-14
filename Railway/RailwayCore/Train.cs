@@ -17,6 +17,7 @@ namespace RailwayCore
         public Train()
         {
             this.Wagons = new HashSet<Wagon>();
+            this.Routes = new HashSet<Route>();
         }
     
         public int Id { get; set; }
@@ -26,8 +27,9 @@ namespace RailwayCore
         public int CurrentStationId { get; set; }
         public double Velocity { get; set; }
     
-        public virtual Station Station { get; set; }
-        public virtual Worker Worker { get; set; }
+        public virtual Station CurrentStation { get; set; }
+        public virtual Worker Driver { get; set; }
         public virtual ICollection<Wagon> Wagons { get; set; }
+        public virtual ICollection<Route> Routes { get; set; }
     }
 }

@@ -18,6 +18,10 @@ namespace RailwayCore
         {
             this.Trains = new HashSet<Train>();
             this.Waypoints = new HashSet<Waypoint>();
+            this.InTickets = new HashSet<Ticket>();
+            this.OutTickets = new HashSet<Ticket>();
+            this.EndRoutes = new HashSet<Route>();
+            this.StartRoutes = new HashSet<Route>();
         }
     
         public int Id { get; set; }
@@ -25,5 +29,9 @@ namespace RailwayCore
     
         public virtual ICollection<Train> Trains { get; set; }
         public virtual ICollection<Waypoint> Waypoints { get; set; }
+        public virtual ICollection<Ticket> InTickets { get; set; }
+        public virtual ICollection<Ticket> OutTickets { get; set; }
+        public virtual ICollection<Route> EndRoutes { get; set; }
+        public virtual ICollection<Route> StartRoutes { get; set; }
     }
 }

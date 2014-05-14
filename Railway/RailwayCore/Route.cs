@@ -20,11 +20,15 @@ namespace RailwayCore
         }
     
         public int Id { get; set; }
-        public int StartStation { get; set; }
         public System.DateTime StartTime { get; set; }
-        public int EndStation { get; set; }
         public System.DateTime EndTime { get; set; }
+        public int TrainId { get; set; }
+        public int StartStationId { get; set; }
+        public int EndStationId { get; set; }
     
         public virtual ICollection<Ticket> Tickets { get; set; }
+        public virtual Train Train { get; set; }
+        public virtual Station EndStation { get; set; }
+        public virtual Station StartStation { get; set; }
     }
 }
