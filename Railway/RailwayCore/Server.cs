@@ -32,6 +32,9 @@ namespace RailwayCore
             var minskP = stations.First(s => s.Name == "Минск-Пассажирский");
             var orshaZ = stations.First(s => s.Name == "Орша-Западная");
 
+            var step = stations.First(s => s.Name == "Степянка");
+            var jod = stations.First(s => s.Name == "Жодино");
+
 
 
            
@@ -47,6 +50,28 @@ namespace RailwayCore
             //Context.SaveChanges();
 
             var route = Context.Routes.First();
+
+            var passenger = new Passenger
+                                {
+                                    FirstName = "Pass1",
+                                    MiddleName = "Pass1",
+                                    LastName = "Pass1",
+                                    IdentityNumber = "12345"
+                                };
+
+            var ticket = new Ticket();
+            ticket.Route = route;
+            ticket.Passenger = passenger;
+            ticket.Price = 123;
+            ticket.InStation = step;
+            ticket.OutStation = jod;
+            ticket.BuyDate = DateTime.Now;
+            ticket.Wagon = route.Train.Wagons.First();
+            Context.Tickets.Add(ticket);
+            Context.SaveChanges();
+
+
+            FillTicket(ticket);
 
             GetNetSegmentsByStationId(1);
             GetStationsOnSegmentsByStationId(1);

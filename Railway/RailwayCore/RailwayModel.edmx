@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="RailwayModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="RailwayModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Passenger">
           <Key>
             <PropertyRef Name="Id" />
@@ -64,8 +64,8 @@
           <Property Name="InStationId" Type="int" Nullable="false" />
           <Property Name="OutStationId" Type="int" Nullable="false" />
           <Property Name="Length" Type="int" Nullable="false" />
-          <Property Name="InTime" Type="datetime" Nullable="false" />
-          <Property Name="OutTime" Type="datetime" Nullable="false" />
+          <Property Name="InTime" Type="datetime" />
+          <Property Name="OutTime" Type="datetime" />
         </EntityType>
         <EntityType Name="Train">
           <Key>
@@ -511,8 +511,8 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           <Property Name="InStationId" Type="Int32" Nullable="false" />
           <Property Name="OutStationId" Type="Int32" Nullable="false" />
           <Property Name="Length" Type="Int32" Nullable="false" />
-          <Property Name="InTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="OutTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="InTime" Type="DateTime" Precision="3" />
+          <Property Name="OutTime" Type="DateTime" Precision="3" />
           <NavigationProperty Name="InStation" Relationship="RailwayModel.FK_Ticket_Station_In" FromRole="Ticket" ToRole="Station" />
           <NavigationProperty Name="OutStation" Relationship="RailwayModel.FK_Ticket_Station_Out" FromRole="Ticket" ToRole="Station" />
         </EntityType>
