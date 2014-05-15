@@ -68,6 +68,7 @@
     <Compile Include="Passenger.cs">
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="PassengerPart.cs" />
     <Compile Include="RailwayModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -89,6 +90,7 @@
     <Compile Include="Route.cs">
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="RoutePart.cs" />
     <Compile Include="SegmentLength.cs">
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>
@@ -100,12 +102,15 @@
     <Compile Include="Ticket.cs">
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="TicketPart.cs" />
     <Compile Include="Train.cs">
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="TrainPart.cs" />
     <Compile Include="Wagon.cs">
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="WagonPart.cs" />
     <Compile Include="Waypoint.cs">
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>
@@ -115,6 +120,7 @@
     <Compile Include="Worker.cs">
       <DependentUpon>RailwayModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="WorkerPart.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

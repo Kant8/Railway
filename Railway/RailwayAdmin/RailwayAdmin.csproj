@@ -73,7 +73,13 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\RailwayCore.Passenger.datasource" />
+    <None Include="Properties\DataSources\RailwayCore.Route.datasource" />
     <None Include="Properties\DataSources\RailwayCore.Station.datasource" />
+    <None Include="Properties\DataSources\RailwayCore.Ticket.datasource" />
+    <None Include="Properties\DataSources\RailwayCore.Train.datasource" />
+    <None Include="Properties\DataSources\RailwayCore.Wagon.datasource" />
+    <None Include="Properties\DataSources\RailwayCore.Worker.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -538,7 +538,7 @@ warning 6002: The table/view 'Railway.dbo.WaypointStation' does not have a prima
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaxPassengerCount" Type="Int32" Nullable="false" />
-          <Property Name="PassengerCount" Type="Int32" Nullable="false" a:SetterAccess="Private" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
+          <Property Name="PassengerCount" Type="Int32" Nullable="false" a:SetterAccess="Public" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
           <Property Name="TrainId" Type="Int32" />
           <Property Name="ConductorId" Type="Int32" />
           <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_Wagon" FromRole="Wagon" ToRole="Ticket" />

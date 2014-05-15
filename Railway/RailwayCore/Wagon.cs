@@ -21,7 +21,7 @@ namespace RailwayCore
     
         public int Id { get; set; }
         public int MaxPassengerCount { get; set; }
-        public int PassengerCount { get; private set; }
+        public int PassengerCount { get; set; }
         public Nullable<int> TrainId { get; set; }
         public Nullable<int> ConductorId { get; set; }
     

@@ -13,10 +13,14 @@ namespace RailwayCore
     {
         public static RailwayContext Context { get; private set; }
 
+        public static decimal PricePerLength { get; set; }
+
         static Server()
         {
             Context = new RailwayContext();
             Context.Database.Connection.Open();
+
+            PricePerLength = 2;
         }
 
         public void Foo()
@@ -140,6 +144,12 @@ namespace RailwayCore
             return new DateTime(today.Year, today.Month, today.Day, hours, minutes, 0);
         }
 
+        public DateTime CreateTrainTime(string hourMinStr)
+        {
+            var parts = hourMinStr.Split(':');
+            return CreateTrainTime(Int32.Parse(parts[0]), Int32.Parse(parts[1]));
+        }
+
         public static List<List<GetNetSegmentsByStationId_Result>> GetNetSegmentsByStationId(int stationId)
         {
             var connection = Context.Database.Connection;
@@ -211,7 +221,7 @@ namespace RailwayCore
 
             var reader = cmd.ExecuteReader();
             var chain = ((IObjectContextAdapter)Context).ObjectContext
-                .Translate<GetSegmentLengths_Result>(reader);
+                .Translate<GetSegmentLengths_Result>(reader).ToList();
             int resLength = chain.Sum(c => c.Length);
 
             return resLength;
@@ -219,36 +229,91 @@ namespace RailwayCore
 
         public static int GetLengthsBetweenStations(int startStationId, int endStationId)
         {
+            List<GetNetSegmentsByStationId_Result> resSegment = GetSegmentForStations(startStationId, endStationId);
+            if (resSegment == null) return 0;
+
+            var lengths = resSegment
+                .Join(Context.SegmentLengths, s => s.WaypointId, sl => sl.StartWaypointId, (s, sl) => sl);
+
+            var startStationLengths = lengths.Join(Context.WaypointStations, l => l.StartWaypointId, ws => ws.WaypointId,
+                (l, ws) => new {ws.StationId, ws.StationName, l.Length, l.EndWaypointId});
+
+            var stationLengths = startStationLengths.Join(Context.WaypointStations, l => l.EndWaypointId, ws => ws.WaypointId,
+                (l, ws) => new
+                {
+                    StartStatioinId = l.StationId,
+                    StartStationName = l.StationName,
+                    EndStationId = ws.StationId,
+                    EndStationName = ws.StationName,
+                    l.Length
+                }).ToList();
+
+            return stationLengths.Sum(s => s.Length);
+
+            //var segmentTable = new DataTable();
+            //segmentTable.Columns.AddRange(new[]
+            //{
+            //    new DataColumn("Id", typeof (int)) {AllowDBNull =true}, new DataColumn("PrevWaypointId", typeof (int)){AllowDBNull =true},
+            //    new DataColumn("WaypointId", typeof (int)){AllowDBNull =true}, new DataColumn("NextWaypointId", typeof (int)){AllowDBNull =true}
+            //});
+
+            //foreach (var segment in resSegment.TakeWhile(segment => segment.Id != end.Id).ToList())
+            //{
+            //    segmentTable.Rows.Add(segment.Id, segment.PrevWaypointId, segment.WaypointId, segment.NextWaypointId);
+            //}
+
+            //return GetSegmentLength(segmentTable);
+        }
+
+        public static List<GetNetSegmentsByStationId_Result> GetFullSegmentForStations(int startStationId, int endStationId)
+        {
             var segments = GetNetSegmentsByStationId(startStationId);
 
             var endWaypoints = GetWaypointsForStation(endStationId);
 
-            GetNetSegmentsByStationId_Result end = null;
             List<GetNetSegmentsByStationId_Result> resSegment = null;
             foreach (var segment in segments)
             {
-                end = segment.FirstOrDefault(s => s.WaypointId != null && endWaypoints.Contains(s.WaypointId.Value));
+                var end = segment.FirstOrDefault(s => s.WaypointId != null && endWaypoints.Contains(s.WaypointId.Value));
                 if (end != null)
                 {
                     resSegment = segment;
                     break;
                 }
             }
-            if (resSegment == null) return 0;
+            return resSegment;
+        }
 
-            var segmentTable = new DataTable();
-            segmentTable.Columns.AddRange(new[]
-            {
-                new DataColumn("Id", typeof (int)) {AllowDBNull =true}, new DataColumn("PrevWaypointId", typeof (int)){AllowDBNull =true},
-                new DataColumn("WaypointId", typeof (int)){AllowDBNull =true}, new DataColumn("NextWaypointId", typeof (int)){AllowDBNull =true}
-            });
+        public static List<GetNetSegmentsByStationId_Result> GetSegmentForStations(int startStationId, int endStationId)
+        {
+            var segments = GetNetSegmentsByStationId(startStationId);
 
-            foreach (var segment in resSegment.TakeWhile(segment => segment.Id != end.Id))
+            var startWaypoints = GetWaypointsForStation(startStationId);
+            var endWaypoints = GetWaypointsForStation(endStationId);
+
+            List<GetNetSegmentsByStationId_Result> resSegment = null;
+            foreach (var segment in segments)
             {
-                segmentTable.Rows.Add(segment.Id, segment.PrevWaypointId, segment.WaypointId, segment.NextWaypointId);
+                var end = segment.FirstOrDefault(s => s.WaypointId != null && endWaypoints.Contains(s.WaypointId.Value));
+                if (end != null)
+                {
+                    resSegment = segment;
+                    break;
+                }
             }
 
-            return GetSegmentLength(segmentTable);
+            if (resSegment == null) return null;
+
+            var startWaypoint = startWaypoints.Intersect(resSegment.Select(s => s.WaypointId != null ? s.WaypointId.Value : 0)).First();
+            var endWaypoint = endWaypoints.Intersect(resSegment.Select(s => s.WaypointId != null ? s.WaypointId.Value : 0)).First();
+
+            var subStartSeg = resSegment.SkipWhile(s => s.WaypointId != startWaypoint).ToList();
+
+            var reversed = subStartSeg.AsEnumerable().Reverse();
+            var subSegEnd = reversed.TakeWhile(s => s.WaypointId != endWaypoint).Reverse().ToList();
+                
+
+            return subStartSeg.Except(subSegEnd).ToList();
         }
 
         public static List<int> GetWaypointsForStation(int stationId)
@@ -275,11 +340,10 @@ namespace RailwayCore
             var startSegments = GetNetSegmentsByStationId(route.StartStationId);
             var endWaypoints = GetWaypointsForStation(route.EndStationId);
 
-            GetNetSegmentsByStationId_Result end = null;
             List<GetNetSegmentsByStationId_Result> resSegment = null;
             foreach (var segment in startSegments)
             {
-                end = segment.FirstOrDefault(s => s.WaypointId != null && endWaypoints.Contains(s.WaypointId.Value));
+                var end = segment.FirstOrDefault(s => s.WaypointId != null && endWaypoints.Contains(s.WaypointId.Value));
                 if (end != null)
                 {
                     resSegment = segment;
@@ -302,7 +366,7 @@ namespace RailwayCore
             var length = GetLengthsBetweenStations(route.StartStationId, stationId);
             if (length == 0) return route.StartTime;
 
-            double travelHours = (double) length/route.Train.Velocity;
+            double travelHours = length/route.Train.Velocity;
 
             return route.StartTime.AddHours(travelHours);
         }
@@ -314,6 +378,7 @@ namespace RailwayCore
             var outTime = GetTimeTillStationOnRoute(route.Id, ticket.OutStationId);
 
             ticket.Length = GetLengthsBetweenStations(ticket.InStationId, ticket.OutStationId);
+            ticket.Price = CalcCost(ticket.InStationId, ticket.OutStationId);
             ticket.InTime = inTime;
             ticket.OutTime = outTime;
         }
@@ -382,20 +447,11 @@ namespace RailwayCore
 
         public static List<Station> GetJunktionStations()
         {
-            var connection = Context.Database.Connection;
-            var cmd = connection.CreateCommand();
-            cmd.CommandText = "dbo.GetJunktionStations";
-            cmd.CommandType = CommandType.StoredProcedure;
+            var junkWaypoints = Context.RoadNets.Where(w => w.PrevWaypoint == null || w.NextWaypoint == null);
+            var junkStationsId = Context.WaypointStations
+                .Join(junkWaypoints, ws => ws.WaypointId, jw => jw.WaypointId, (ws, jw) => ws.StationId).Distinct().ToList();
 
-            var reader = cmd.ExecuteReader();
-            var junkStations = ((IObjectContextAdapter)Context).ObjectContext
-                .Translate<GetJunktionStations_Result>(reader);
-
-            var result = new List<Station>();
-            foreach (var js in junkStations)
-            {
-                result.Add(Context.Stations.Find(js.StationId));
-            }
+            var result = junkStationsId.Select(jsi => Context.Stations.Find(jsi)).ToList();
             return result;
         }
 
@@ -418,6 +474,37 @@ namespace RailwayCore
             return res;
         }
 
+        public static List<Train> GetFreeTrains()
+        {
+            return Context.Trains.Where(t => t.Routes.Count == 0).ToList();
+        }
+
+        public static List<Wagon> GetFreeWagons()
+        {
+            return Context.Wagons.Where(w => w.Train == null).ToList();
+        }
+
+        public static List<Worker> GetFreeWorkers()
+        {
+            return Context.Workers.Where(w => w.Trains.Count == 0 && w.Wagons.Count == 0).ToList();
+        }
+
+        public static decimal CalcCost(int startStationId, int endStationId)
+        {
+            var length = GetLengthsBetweenStations(startStationId, endStationId);
+            return length*PricePerLength;
+        }
+
+        public static List<Station> GetStationsBetweenStations(int startStationId, int endStationId)
+        {
+            var segment = GetSegmentForStations(startStationId, endStationId);
+
+            var result = new List<Station>();
+
+            var stationIds = segment.Join(Context.WaypointStations, s => s.WaypointId, ws => ws.WaypointId, (s, ws) => ws.StationId);
+
+            return stationIds.Select(sid => Context.Stations.Find(sid)).ToList();
+        }
 
     }
 }
