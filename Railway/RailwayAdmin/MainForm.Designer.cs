@@ -55,6 +55,7 @@
             this.comboBoxRouteTrains = new System.Windows.Forms.ComboBox();
             this.tabControlMain = new System.Windows.Forms.TabControl();
             this.tabPageStations = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
             this.tabPageTrains = new System.Windows.Forms.TabPage();
             this.buttonAddWagon = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
@@ -132,7 +133,6 @@
             this.label30 = new System.Windows.Forms.Label();
             this.buttonRefresh = new System.Windows.Forms.Button();
             this.buttonExit = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceStations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceSegmentStations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceJunkStations)).BeginInit();
@@ -395,6 +395,16 @@
             this.tabPageStations.TabIndex = 0;
             this.tabPageStations.Text = "Станции";
             this.tabPageStations.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(26, 378);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(253, 23);
+            this.button1.TabIndex = 20;
+            this.button1.Text = "Сгенерировать отчет";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // tabPageTrains
             // 
@@ -1106,15 +1116,6 @@
             this.buttonExit.Text = "Выход";
             this.buttonExit.UseVisualStyleBackColor = true;
             this.buttonExit.Click += new System.EventHandler(this.buttonExit_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(26, 378);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(253, 23);
-            this.button1.TabIndex = 20;
-            this.button1.Text = "Сгенерировать отчет";
-            this.button1.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 

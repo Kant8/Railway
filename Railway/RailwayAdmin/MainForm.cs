@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RailwayCore;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace RailwayAdmin
 {
@@ -98,14 +100,21 @@ namespace RailwayAdmin
 
             var file = openFileDialogCSV.OpenFile();
 
-            using (var reader = new StreamReader(file))
+            using (var reader = new StreamReader(file,Encoding.UTF8))
             {
                 do
                 {
                     string segmentString = reader.ReadLine();
                     if (segmentString == null) break;
 
-                    var stationNames = segmentString.Split(',');
+                    var stationNames = segmentString.Split(',').ToList();
+
+
+                    string lengthString = reader.ReadLine();
+                    if (lengthString == null) throw new InvalidDataException("Нет данных о расстоянии между станциями");
+                    var lengths = lengthString.Split(',').Select(Int32.Parse).ToList();
+                    if (lengths.Count != stationNames.Count - 1) throw new InvalidDataException("Количество длин не совпадает с количеством станций");
+
 
                     var stations = new List<Station>();
                     foreach (var name in stationNames)
@@ -116,10 +125,6 @@ namespace RailwayAdmin
                     }
                     var waypoints = Server.CreateNetSegment(stations);
 
-                    string lengthString = reader.ReadLine();
-                    if (lengthString == null) throw new InvalidDataException("Нет данных о расстоянии между станциями");
-                    var lengths = segmentString.Split(',').Select(Int32.Parse).ToList();
-                    if (lengths.Count != stations.Count - 1) throw new InvalidDataException("Количество длин не совпадает с количеством станций");
                     Server.CreateSegmentLengths(waypoints, lengths);
                 } while (!reader.EndOfStream);
             }
@@ -129,6 +134,7 @@ namespace RailwayAdmin
         {
             var station = comboBoxStations.SelectedItem as Station;
             if (station == null) return;
+            if (station.Waypoints.Count == 0) return;
             bindingSourceSegmentStations.DataSource =
                 Server.GetStationsFromSegments(Server.GetStationsOnSegmentsByStationId(station.Id));
         }
@@ -455,6 +461,29 @@ namespace RailwayAdmin
             Server.Context.SaveChanges();
 
             textBoxTicket.Text = ticket.ToLongString();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var stream = File.OpenWrite("e:/report.pdf");
+                var doc = new Document();
+                var writer = PdfWriter.GetInstance(doc, stream);
+
+                var font = BaseFont.CreateFont("c:/Windows/Fonts/arial.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+                doc.Open();
+                var para = new Paragraph(Server.GetStats(), new iTextSharp.text.Font(font));
+
+                doc.Add(para);
+                doc.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+            MessageBox.Show("Отчет успешно сгенерирован");
         }
     }
 }

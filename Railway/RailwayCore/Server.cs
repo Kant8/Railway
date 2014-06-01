@@ -406,6 +406,7 @@ namespace RailwayCore
                 netSeg.PrevWaypoint = waypoints[i - 1];
                 netSeg.Waypoint = waypoints[i];
                 netSeg.NextWaypoint = waypoints[i + 1];
+                segments.Add(netSeg);
             }
             segments.Add(new RoadNet
             {
@@ -504,6 +505,65 @@ namespace RailwayCore
             var stationIds = segment.Join(Context.WaypointStations, s => s.WaypointId, ws => ws.WaypointId, (s, ws) => ws.StationId);
 
             return stationIds.Select(sid => Context.Stations.Find(sid)).ToList();
+        }
+
+        public static string GetStats()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine("Общая длина всех путей");
+
+            sb.AppendLine(Context.SegmentLengths.Sum(sl => sl.Length).ToString());
+            sb.AppendLine();
+
+            sb.AppendLine("Общее количество всех станций");
+            sb.AppendLine(Context.Stations.Count().ToString());
+            sb.AppendLine();
+
+            sb.AppendLine("Количество сегментов");
+            sb.AppendLine(Context.RoadNets.Count(s => s.PrevWaypoint == null).ToString());
+            sb.AppendLine();
+
+            sb.AppendLine("Самый популярный маршрут");
+            var dicRouteId = new Dictionary<int, int>();
+            foreach (var ticket in Context.Tickets.ToList())
+            {
+                if (!dicRouteId.ContainsKey(ticket.RouteId))
+                {
+                    dicRouteId[ticket.RouteId] = 1;
+                }
+                else
+                {
+                    dicRouteId[ticket.RouteId]++;
+                }
+            }
+
+            int maxCount = dicRouteId.Values.Max();
+            var routeId = dicRouteId.First(kvp => kvp.Value == maxCount).Key;
+            var route = Context.Routes.Find(routeId);
+            sb.AppendLine(route.ToString());
+            sb.AppendLine();
+
+            sb.AppendLine("Поезд с максимальным числом пассажиров");
+            int max = 0;
+            Train winner = Context.Trains.First();
+            foreach (var train in Context.Trains.ToList())
+            {
+                var sum = train.Wagons.Sum(w => w.MaxPassengerCount);
+                if (sum > max)
+                {
+                    max = sum;
+                    winner = train;
+                }
+            }
+            sb.AppendLine(winner.Name + " - " + max);
+            sb.AppendLine();
+
+            sb.AppendLine("Самый дорогой билет");
+            var expTicket = Context.Tickets.OrderByDescending(t => t.Price).First();
+            sb.AppendLine(expTicket.ToLongString());
+
+            return sb.ToString();
         }
 
     }
